@@ -6,16 +6,22 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/mreichba/task-manager-backend/db"
 	"github.com/mreichba/task-manager-backend/handlers"
 )
 
 func main() {
+	// Initiate Database Connection
+	db.Init()
 
-	//initiate router
+	// Initiate Router
 	router := mux.NewRouter()
 
-	//Health Check
-	router.HandleFunc("/health", handlers.HealthCheckHandler)
+	// Server Health Check
+	router.HandleFunc("/health", handlers.HealthCheck)
+
+	// Database Health Check
+	router.HandleFunc("/db-health", handlers.DBHealthCheck)
 
 	// Start the server
 	port := "8080"

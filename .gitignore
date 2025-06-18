@@ -1,0 +1,19 @@
+# Global ignore for macOS / VSCode / IDEs
+.DS_Store
+*.log
+*.env
+node_modules/
+dist/
+.env.local
+
+# Go build files
+go-backend/bin/
+go-backend/*.exe
+go-backend/*.out
+go-backend/coverage.*
+go-backend/.env
+
+# React frontend
+react-frontend/node_modules/
+react-frontend/dist/
+react-frontend/.env
