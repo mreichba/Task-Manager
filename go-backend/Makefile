@@ -2,6 +2,8 @@
 
 # Load variables from .env file
 include .env
+
+# Export var for external tool usage (migrate)
 export DATABASE_URL
 
 # Apply all up migrations

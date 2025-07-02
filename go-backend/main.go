@@ -18,13 +18,18 @@ func main() {
 	router := mux.NewRouter()
 
 	// Server Health Check
-	router.HandleFunc("/health", handlers.HealthCheck)
+	router.HandleFunc("/health", handlers.HealthCheck).Methods("GET")
 
 	// Database Health Check
-	router.HandleFunc("/db-health", handlers.DBHealthCheck)
+	router.HandleFunc("/db-health", handlers.DBHealthCheck).Methods("GET")
+
+	// Register New User endpoint
+	router.HandleFunc("/register", handlers.RegisterUserHandler).Methods("POST")
+	// Login User endpoint
+	router.HandleFunc("/login", handlers.LoginHandler).Methods("POST")
 
 	// Start the server
-	port := "8080"
+	port := "8000"
 	fmt.Printf("Server is running on port %v\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
