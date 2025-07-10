@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/mreichba/task-manager-backend/db"
 	"github.com/mreichba/task-manager-backend/handlers"
+	"github.com/mreichba/task-manager-backend/middleware"
 )
 
 func main() {
@@ -27,6 +28,8 @@ func main() {
 	router.HandleFunc("/register", handlers.RegisterUserHandler).Methods("POST")
 	// Login User endpoint
 	router.HandleFunc("/login", handlers.LoginHandler).Methods("POST")
+
+	router.Handle("/me", middleware.JWTMiddleware(http.HandlerFunc(handlers.GetCurrentUser)))
 
 	// Start the server
 	port := "8000"

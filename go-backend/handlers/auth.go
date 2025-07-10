@@ -6,6 +6,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/mreichba/task-manager-backend/auth"
 	"github.com/mreichba/task-manager-backend/db"
 	"github.com/mreichba/task-manager-backend/models"
 )
@@ -77,9 +78,26 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return 200 OK + basic user data (no password) if match
+	// Generate JWT
+	token, err := auth.GenerateJWT(dbUser.ID)
+	if err != nil {
+		http.Error(w, "Could not generate token", http.StatusInternalServerError)
+		return
+	}
+
+	// Return 200 OK, Token, and basic user data (no password) if match
 	dbUser.Password = ""
 
+	response := models.LoginResponse{
+		Token: token,
+		User: models.UserResponse{
+			ID:        dbUser.ID,
+			Username:  dbUser.Username,
+			Email:     dbUser.Email,
+			CreatedAt: dbUser.CreatedAt,
+		},
+	}
+
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(dbUser)
+	json.NewEncoder(w).Encode(response)
 }
