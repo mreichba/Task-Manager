@@ -59,11 +59,5 @@ func jwtKeyLookup(token *jwt.Token) (interface{}, error) {
 		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 	}
 
-	// Return the secret used to sign the token
-	secret := config.AppConfig.JWTSecret
-	if secret == "" {
-		return nil, fmt.Errorf("JWT_SECRET not set in environment")
-	}
-
-	return []byte(secret), nil
+	return []byte(config.AppConfig.JWTSecret), nil
 }

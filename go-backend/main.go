@@ -6,12 +6,17 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/mreichba/task-manager-backend/config"
 	"github.com/mreichba/task-manager-backend/db"
 	"github.com/mreichba/task-manager-backend/handlers"
 	"github.com/mreichba/task-manager-backend/middleware"
 )
 
 func main() {
+
+	// Load App Config
+	config.LoadConfig()
+
 	// Initiate Database Connection
 	db.Init()
 
