@@ -2,11 +2,12 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
-	"log"
+	"time"
 
 	_ "github.com/lib/pq"
 	"github.com/mreichba/task-manager-backend/config"
+	"github.com/mreichba/task-manager-backend/logger"
+	"github.com/sirupsen/logrus"
 )
 
 var DB *sql.DB
@@ -15,21 +16,41 @@ func Init() {
 	// Get DB connection string
 	dbURL := config.AppConfig.DatabaseURL
 	if dbURL == "" {
-		log.Fatal("DATABASE_URL not set in environment")
+		logger.Fatal("DATABASE_URL not set in environment", nil)
 	}
 
 	// Connect to PostgreSQL
 	conn, err := sql.Open("postgres", dbURL)
 	if err != nil {
-		log.Fatal("Failed to open DB connection:", err)
+		logger.Fatal("Failed to open DB connection:", logrus.Fields{
+			"error": err,
+			"dbURL": dbURL,
+		})
 	}
 	DB = conn
 
-	// Ping to test connection
-	err = DB.Ping()
-	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+	// Retry pinging up to 3 times with backoff
+	if err := retryPing(DB); err != nil {
+		logger.Fatal("Failed to connect to database after retries", logrus.Fields{
+			"error": err,
+		})
 	}
 
-	fmt.Println("Connected to the database")
+	logger.Info("Connected to the database", nil)
+}
+
+func retryPing(db *sql.DB) error {
+	var err error
+	for i := 1; i <= 3; i++ {
+		err = db.Ping()
+		if err == nil {
+			return nil
+		}
+		logger.Warn("Ping failed, retrying...", logrus.Fields{
+			"attempt": i,
+			"error":   err,
+		})
+		time.Sleep(time.Duration(i) * time.Second)
+	}
+	return err
 }

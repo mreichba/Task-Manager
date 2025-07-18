@@ -3,7 +3,6 @@ package config
 import (
 	"log"
 	"os"
-	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -12,7 +11,7 @@ type Config struct {
 	DatabaseURL string
 	JWTSecret   string
 	ServerPort  string
-	TokenTTL    time.Duration
+	Environment string
 }
 
 var AppConfig *Config
@@ -27,7 +26,7 @@ func LoadConfig() {
 		DatabaseURL: mustGetEnv("DATABASE_URL"),
 		JWTSecret:   mustGetEnv("JWT_SECRET"),
 		ServerPort:  getEnv("PORT", "8000"),
-		TokenTTL:    24 * time.Hour,
+		Environment: mustGetEnv("ENV"),
 	}
 }
 
